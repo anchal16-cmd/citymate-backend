@@ -1,0 +1,20 @@
+{
+  "name": "citymate-backend",
+  "version": "1.0.0",
+  "description": "Backend API for CityMate — powers Mia (AI chatbot) and future features like Bookings.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.65.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
