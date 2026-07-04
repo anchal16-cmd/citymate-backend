@@ -1,8 +1,8 @@
 # CityMate Backend
 
 Node.js + Express backend for CityMate. Right now it powers **Mia**, the AI
-chatbot (using the real Claude API), and is structured so features like
-**Bookings** can be added the same way later.
+chatbot (using the free Google Gemini API — no credit card needed), and is
+structured so features like **Bookings** can be added the same way later.
 
 ## 📁 Structure
 
@@ -11,7 +11,7 @@ citymate-backend/
 ├── server.js                        # Express app entry point
 ├── .env.example                     # Copy to .env and fill in your key
 ├── src/
-│   ├── config/anthropic.js          # Claude API client setup
+│   ├── config/gemini.js             # Gemini API config (uses built-in fetch, no SDK)
 │   ├── data/citymateContext.js      # Mia's system prompt (what she knows/doesn't)
 │   ├── controllers/chatController.js
 │   └── routes/
@@ -25,16 +25,24 @@ citymate-backend/
    ```bash
    npm install
    ```
-2. Copy the env file and fill in your real Anthropic API key:
+
+2. Get a **free** Gemini API key (no credit card required):
+   - Go to https://aistudio.google.com/app/apikey
+   - Sign in with any Google account
+   - Click **"Create API key"**
+   - Copy the key (starts with `AIza...`)
+
+3. Copy the env file and paste your key in:
    ```bash
    cp .env.example .env
    ```
-   Get a key at https://console.anthropic.com/ (Settings → API Keys). **Never commit `.env`.**
+   Open `.env` and set `GEMINI_API_KEY=AIza...` (your real key). **Never commit `.env`.**
 
-3. Make sure `CORS_ORIGIN` in `.env` matches wherever you're running the CityMate
-   frontend (e.g. VS Code Live Server usually serves on `http://127.0.0.1:5500`).
+4. Make sure `CORS_ORIGIN` in `.env` matches wherever you're running the CityMate
+   frontend (e.g. `npx serve` usually serves on `http://localhost:3000`, VS Code
+   Live Server usually on `http://127.0.0.1:5500`).
 
-4. Start the server:
+5. Start the server:
    ```bash
    npm run dev     # auto-restarts on file changes
    # or
@@ -44,10 +52,10 @@ citymate-backend/
    You should see:
    ```
    CityMate backend running at http://localhost:5000
-   Accepting frontend requests from: http://127.0.0.1:5500
+   Accepting frontend requests from: http://localhost:3000
    ```
 
-5. Test it's alive: open `http://localhost:5000/api/health` in a browser — should
+6. Test it's alive: open `http://localhost:5000/api/health` in a browser — should
    return `{"status":"ok","service":"citymate-backend"}`.
 
 ## 🔌 API
@@ -67,7 +75,7 @@ Request body:
 
 - `message` — required, the new thing the user just typed.
 - `history` — optional, previous turns of the conversation (max last 12 are kept,
-  older ones are dropped automatically to control cost).
+  older ones are dropped automatically).
 
 Response:
 ```json
@@ -79,21 +87,26 @@ Errors come back as `{ "error": "..." }` with an appropriate status code
 
 ### `POST /api/bookings` *(placeholder)*
 
-Returns `501 Not Implemented` with an explanatory message — a real handler will
-replace this once the Bookings feature is built.
+Returns `501 Not Implemented` — a real handler will replace this once the
+Bookings feature is built.
 
-## 💰 Cost note
+## 💰 Free tier limits (Gemini)
 
-Every `/api/chat` call spends real Anthropic API credits. The default model
-(`claude-haiku-4-5-20251001`) is the cheapest/fastest Claude model, good for a
-support-style bot like Mia. `max_tokens` is capped at 400 per reply and history
-is capped at 12 turns to keep costs predictable. Monitor usage at
-https://console.anthropic.com/.
+`gemini-2.5-flash` (the default model here) is free with **no card required**,
+but Google caps free usage — as of writing, roughly **10 requests/minute and
+250 requests/day per project**. That's plenty for a student project or demo.
+If you see a `429` error/"getting a lot of questions" message from Mia, you've
+hit that limit — wait a bit and try again. These exact numbers can change on
+Google's side, so double-check current limits in Google AI Studio if you hit
+this a lot.
+
+If you outgrow the free tier later, you can add billing in Google Cloud
+Console for higher limits — you don't have to switch providers.
 
 ## 🚀 Deploying
 
 For production, don't run this on your laptop. Any Node host works (Render,
 Railway, Fly.io, a VPS, etc.) — just set the same environment variables there
-(`ANTHROPIC_API_KEY`, `CLAUDE_MODEL`, `PORT`, `CORS_ORIGIN` pointing at your real
+(`GEMINI_API_KEY`, `GEMINI_MODEL`, `PORT`, `CORS_ORIGIN` pointing at your real
 frontend domain over HTTPS), and update the frontend's `chat.js` to call your
 deployed backend URL instead of `localhost`.

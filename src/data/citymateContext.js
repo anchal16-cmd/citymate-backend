@@ -1,4 +1,4 @@
-// This is the "grounding" Mia gets on every request. It tells Claude what
+// This is the "grounding" Mia gets on every request. It tells the AI model what
 // CityMate actually does today, so Mia doesn't invent features that don't
 // exist yet. Keep this updated as the product grows — it's the single
 // source of truth Mia relies on.
