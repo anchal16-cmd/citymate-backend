@@ -1,8 +1,12 @@
 # CityMate Backend
 
 Node.js + Express backend for CityMate. Right now it powers **Mia**, the AI
-chatbot (using the free Google Gemini API — no credit card needed), and is
-structured so features like **Bookings** can be added the same way later.
+chatbot (using the free Google Gemini API — no credit card needed). The
+**Bookings** feature has since been built, but lives directly in the frontend
+against Firestore (see the frontend's `FEATURE_BOOKINGS.md`) rather than here,
+since it doesn't need a secret the way Mia does. This backend stays
+structured so any future feature that *does* need one can be added the same
+way Mia was.
 
 ## 📁 Structure
 
@@ -87,8 +91,14 @@ Errors come back as `{ "error": "..." }` with an appropriate status code
 
 ### `POST /api/bookings` *(placeholder)*
 
-Returns `501 Not Implemented` — a real handler will replace this once the
-Bookings feature is built.
+Bookings are now a real feature, but implemented directly against Firestore
+from the frontend (`bookings.html` / `bookings.js`), the same way `users` and
+`providers` already work — not through this server, since bookings don't need
+a secret. See the frontend's `FEATURE_BOOKINGS.md` for the full write-up.
+
+This endpoint still returns `501 Not Implemented` and is kept as a reserved
+placeholder for a future server-side need, e.g. sending notification emails
+when a booking's status changes.
 
 ## 💰 Free tier limits (Gemini)
 
@@ -102,6 +112,13 @@ this a lot.
 
 If you outgrow the free tier later, you can add billing in Google Cloud
 Console for higher limits — you don't have to switch providers.
+
+## 🌱 Need demo provider data?
+
+Populating providers is a Firestore concern, not a backend one, so the seed
+tool lives in the frontend project: `citymate-frontend/seed-providers.html`.
+It bulk-creates 10 demo providers per service category (80 total) with one
+click — see that project's README for how to run it.
 
 ## 🚀 Deploying
 
